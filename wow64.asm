@@ -21,7 +21,7 @@
  ;
  ; 64-bit OBJ
  ;   yasm -f win64 thread.asm -o thread.obj
- 
+
 struc UNICODE_STRING
   .Length:        resw 1
   .MaximumLength: resw 1
@@ -67,7 +67,6 @@ struc rm_stk
 endstruc
 
   section .bss
-
 hThread: resq 1
 ntStatus: resd 1
 
@@ -265,15 +264,15 @@ _CreateRemoteThread64:
     
     mov    r9d, [rsi+5*4]        ; hProcess
     mov    edx, 10000000h        ; GENERIC_ALL
-    lea    rcx, [hThread]        ; &hThread
+    lea    rcx, [rel hThread]        ; &hThread
     call   rbx
     
     mov    rsp, rsi              ; restore stack value
     
-    bits   32
     call   sw32                  ; switch back to x86 mode
-    mov    eax, dword[hThread+0] ; return thread handle
+    mov    eax, [rel hThread+0] ; return thread handle
 exit_create:
+    bits   32
     pop    ebp
     pop    edi
     pop    esi
@@ -312,14 +311,14 @@ _NtQueryInformationProcess64:
     mov    edx, [rsi+6*4]        ; ProcessInformationClass
     mov    ecx, [rsi+5*4]        ; ProcessHandle
     call   rbx
-    mov    [ntStatus], eax
+    mov    [rel ntStatus], eax
     
     mov    rsp, rsi              ; restore stack value
     
-    bits   32
     call   sw32                  ; switch back to x86 mode
 exit_query:
-    mov    eax, [ntStatus]
+    mov    eax, [rel ntStatus]
+    bits   32
     pop    ebp
     pop    edi
     pop    esi
@@ -365,7 +364,7 @@ _NtReadVirtualMemory64:
     mov    rdx, [rsi+6*4]        ; BaseAddress
     mov    ecx, [rsi+5*4]        ; ProcessHandle
     call   rbx
-    mov    [ntStatus], eax
+    mov    [rel ntStatus], eax
     
     mov    rsp, rsi              ; restore stack value
  

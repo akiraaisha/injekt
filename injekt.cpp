@@ -28,7 +28,7 @@
 #include <Winternl.h>
 
 #pragma comment (lib, "advapi32.lib")
-#pragma comment (lib, "ntdll.lib")
+//#pragma comment (lib, "ntdll.lib")
 
 // external function to create 64-bit thread from 32-bit process
 extern "C" HANDLE CreateRemoteThread64 (HANDLE hProcess, 
@@ -122,7 +122,7 @@ BOOL isElevated (VOID) {
       bResult = te.TokenIsElevated != 0;
     }
     CloseHandle(hToken);
-}
+  }
   return bResult;
 }
 
@@ -176,7 +176,7 @@ BOOL inject (DWORD dwId, LPVOID pCode, SIZE_T dwCode)
       bStatus=WriteProcessMemory (hProc, pMemory, pCode, dwCode, &written);
       if (bStatus) {
         printf ("\n  [ changing memory attributes to RX");
-        VirtualProtectEx(hProc, pMemory, dwCode, PAGE_EXECUTE_READ, &old);
+        VirtualProtectEx (hProc, pMemory, dwCode, PAGE_EXECUTE_READ, &old);
         
         IsWow64Process (GetCurrentProcess(), &bLocalWow64);
         IsWow64Process (hProc, &bRemoteWow64);
@@ -227,7 +227,7 @@ VOID ConsoleSetBufferWidth (SHORT X) {
   SetConsoleScreenBufferSize (GetStdHandle (STD_OUTPUT_HANDLE), csbi.dwSize);
 }
 
-BOOL FileExists(LPCTSTR szPath)
+BOOL FileExists (LPCTSTR szPath)
 {
   DWORD dwAttrib = GetFileAttributes(szPath);
 
